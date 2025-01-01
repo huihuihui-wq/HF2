@@ -1,0 +1,359 @@
+<!DOCTYPE html> <!-- 定义文档类型为HTML5 -->
+<html lang="zh-CN"> <!-- 设置文档语言为中文 -->
+<head>
+    <meta charset="UTF-8"> <!-- 设置字符编码为UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 设置视口，确保响应式设计 -->
+    <title>Pixels - Digital Excellence</title> <!-- 网页标题 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="styles.css"> <!-- 引入自定义样式表 -->
+    <style>
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .contact-btn img {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+        .contact-btn:hover {
+            background-color: #333;
+        }
+        .contact-btn:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation"> <!-- 导航栏 -->
+        <div class="nav-container" style="
+            max-width: 1200px; /* 最大宽度 */
+            margin: 0 auto; /* 居中对齐 */
+            padding: 0 20px; /* 左右内边距 */
+            width: 100%;"> <!-- 宽度100% -->
+            <div class="nav-left"> <!-- 导航栏左侧 -->
+                <a href="#" class="nav-logo">作品集</a> <!-- 网站Logo链接 -->
+                <div class="nav-links"> <!-- 导航链接 -->
+                    <a href="#" class="nav-item">主页</a> <!-- 主页链接 -->
+                    <a href="#" class="nav-item">个人经历</a> <!-- 个人经历链接 -->
+                    <a href="#" class="nav-item">简历</a> <!-- 简历链接 -->
+                </div>
+            </div>
+            <div class="nav-right"> <!-- 导航栏右侧 -->
+                <a href="#" class="contact-btn">联系我 <i class="fas fa-arrow-right"></i></a> <!-- 联系我按钮 -->
+                <button class="menu-btn"><i class="fas fa-bars"></i></button> <!-- 菜单按钮 -->
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="
+        margin: 20px auto 0; /* 上外边距和居中 */
+        max-width: 1200px; /* 最大宽度 */
+        padding: 100px 20px 0; /* 内边距，顶部增加100px */
+        width: 100%; /* 宽度100% */
+        border-radius: 20px; /* 圆角 */
+        position: relative; /* 相对定位 */
+        overflow: hidden;"> <!-- 隐藏溢出内容 -->
+        <div class="hero-content" style="
+            background-color: rgba(255, 255, 255, 0.8); /* 半透明白色背景 */
+            padding: 20px; /* 内边距 */
+            border-radius: 10px; /* 圆角 */
+            position: relative; /* 相对定位 */
+            z-index: 2;"> <!-- 提升层级 -->
+            <h1 class="hero-title">关于我的作品集</h1>
+            <p class="hero-subtitle" style="margin-top: 20px;">欢迎来到我的设计作品集，<br>这里展现了我对设计的热情与追求。</p>
+            <div class="hero-actions"> <!-- 行动按钮 -->
+                <a href="#" class="primary-btn">开始合作 <img src="./icon/fi-rr-call-incoming (2).png" alt="合作" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 5px;"></a> <!-- 开始合作按钮 -->
+            </div>
+            <div class="image-section" style="margin: 40px 0; text-align: center; position: relative;">
+                <img id="carousel-image" src="./images/IMGP1428.JPG" alt="插入图片" style="max-width: 100%; border-radius: 20px; transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;">
+                <div style="position: absolute; top: 50%; left: -20px; transform: translateY(-50%);">
+                    <div style="
+                        position: relative;
+                        width: 50px;
+                        height: 50px;
+                        background-color: rgba(0, 0, 0, 0.7);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;">
+                        <img src="./icon/left.png" onclick="prevImage()" alt="Previous" style="width: 40px; height: 40px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s;">
+                    </div>
+                </div>
+                <div style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);">
+                    <div style="
+                        position: relative;
+                        width: 50px;
+                        height: 50px;
+                        background-color: rgba(0, 0, 0, 0.7);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;">
+                        <img src="./icon/right.png" onclick="nextImage()" alt="Next" style="width: 40px; height: 40px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s;">
+                    </div>
+                </div>
+            </div>
+            <div class="skills-section" style="margin-top: 40px;">
+                <h2 style="text-align: center; font-size: 3em; margin-bottom: 20px;">我可以做的事情</h2>
+                
+                <!-- 软件技能展示区域 -->
+                <div style="text-align: center;">
+                    <div style="
+                        display: inline-flex;
+                        background-color: #f8f8f8;
+                        border-radius: 15px;
+                        padding: 15px;
+                        gap: 15px;
+                        margin: 15px 0 20px;
+                        align-items: center;
+                        justify-content: center;
+                        flex-wrap: wrap;">
+                        <img src="./downicon/figma.png" alt="Figma" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-ai.png" alt="Adobe Illustrator" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-ae.png" alt="Adobe After Effects" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-pr.png" alt="Adobe Premiere" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/chatgpt.png" alt="ChatGPT" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/github.png" alt="GitHub" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/html5.png" alt="HTML5" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-studies" style="margin-top: 20px;">
+                <div class="case-container" style="
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                    padding: 0;">
+                    <div class="case-card" style="
+                        background: #f8f8f8;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        transform: scale(0.95);
+                        padding: 20px 20px 0;">
+                        <div style="overflow: hidden; border-radius: 15px;">
+                            <img src="./images/花-风铃.png" alt="花-风铃" style="width: calc(100% + 40px); height: auto; border-radius: 15px; transition: transform 0.3s ease; margin: -20px -20px 0;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                        <h3 style="text-align: center; margin: 10px 0;">花-风铃</h3>
+                    </div>
+                    <div class="case-card" style="
+                        background: #f8f8f8;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        transform: scale(0.95);
+                        padding: 20px 20px 0;">
+                        <div style="overflow: hidden; border-radius: 15px;">
+                            <img src="./images/花-牡丹.png" alt="花-牡丹" style="width: calc(100% + 40px); height: auto; border-radius: 15px; transition: transform 0.3s ease; margin: -20px -20px 0;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                        <h3 style="text-align: center; margin: 10px 0;">花-牡丹</h3>
+                    </div>
+                    <div class="case-card" style="
+                        background: #f8f8f8;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        transform: scale(0.95);
+                        padding: 20px 20px 0;">
+                        <div style="overflow: hidden; border-radius: 15px;">
+                            <img src="./images/花-鸢尾.png" alt="花-鸯尾" style="width: calc(100% + 40px); height: auto; border-radius: 15px; transition: transform 0.3s ease; margin: -20px -20px 0;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                        <h3 style="text-align: center; margin: 10px 0;">花-鸯尾</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="services-section" style="margin-top: 40px;">
+                <div class="services-container">
+                    <div class="service-card">
+                        <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                            <img src="./images/花-风铃.png" alt="网页设计" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3>网页设计与开发</h3>
+                        <p>为您的品牌打造视觉震撼、用户友好的网站。</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                            <img src="./images/fengling/牡丹.png" alt="数字营销" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3>数字营销策略</h3>
+                        <p>制定全面的策略，以有效的方式吸引您的目标受众。</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                            <img src="./images/fengling/鸢尾.png" alt="SEO" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3>搜索引擎优化</h3>
+                        <p>优化您的网站，以提高搜索引擎结果，增加有机流量和可见性。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="
+            background-image: url('./images/IMGP1428.JPG'); /* 背景图片 */
+            background-size: cover; /* 背景图片覆盖 */
+            background-position: center; /* 背景图片居中 */
+            position: absolute; /* 绝对定位 */
+            top: 100%; /* 顶部位置 */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 200px; /* 高度 */
+            border-radius: 20px; /* 圆角 */
+            z-index: 1;"> <!-- 背景层级 -->
+        </div>
+    </header>
+
+    <section class="feature-section" style="
+        background-image: url('./images/789.png'); /* 背景图片 */
+        background-size: cover; /* 背景图片覆盖 */
+        background-position: center; /* 背景图片居中 -->
+        margin: 40px auto; /* 上下外边距和居中 -->
+        max-width: 1200px; /* 最大宽度 -->
+        padding: 0 20px; /* 左右内边距 -->
+        width: 100%; /* 宽度100% -->
+        height: 300px; /* 固定高度 -->
+        border-radius: 20px; /* 圆角 -->
+        display: flex; /* 使用Flex布局 -->
+        align-items: center; /* 垂直居中 -->
+        justify-content: center;"> <!-- 水平居中 -->
+    </section>
+
+    <main class="portfolio-grid"> <!-- 主要内容区 -->
+        <div class="content-container" style="
+            max-width: 1200px; /* 最大宽度 -->
+            margin: 0 auto; /* 居中对齐 -->
+            padding: 0 20px; /* 左右内边距 -->
+            width: 100%;"> <!-- 宽度100% -->
+        </div>
+    </main>
+
+    <footer class="footer" style="
+        max-width: 1200px; /* 最大宽度 -->
+        margin: 0 auto; /* 居中对齐 -->
+        padding: 0 20px; /* 左右内边距 -->
+        width: 100%;"> <!-- 宽度100% -->
+        <div class="copyright"> 2024 作品集展示. 保留所有权利</div> <!-- 版权信息 -->
+        <div class="social-links"> <!-- 社交链接 -->
+            <a href="#" class="social-icon"><i class="fab fa-weixin"></i></a> <!-- 微信图标 -->
+            <a href="#" class="social-icon"><i class="fab fa-weibo"></i></a> <!-- 微博图标 -->
+            <a href="#" class="social-icon"><i class="fab fa-tiktok"></i></a> <!-- 抖音图标 -->
+        </div>
+    </footer>
+
+    <div class="back-to-top"> <!-- 返回顶部按钮 -->
+        <i class="fas fa-arrow-up"></i> <!-- 向上箭头图标 -->
+    </div>
+
+    <script>
+    // 返回顶部按钮的显示控制
+    const backToTop = document.querySelector('.back-to-top');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.add('visible'); // 显示返回顶部按钮
+        } else {
+            backToTop.classList.remove('visible'); // 隐藏返回顶部按钮
+        }
+    });
+
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // 平滑滚动到顶部
+        });
+    });
+
+    const images = [
+        './images/IMGP1428.JPG',
+        './images/IMGP1458.JPG',
+        './images/IMGP1511.JPG'
+    ];
+    let currentIndex = 0;
+
+    function showImage(index) {
+        const imageElement = document.getElementById('carousel-image');
+        imageElement.style.opacity = 0.2; // 开始淡出，透明度降低
+        imageElement.style.transform = 'scale(0.95)'; // 缩小图片
+        setTimeout(() => {
+            imageElement.src = images[index];
+            imageElement.style.opacity = 1; // 完成入，恢复透明度
+            imageElement.style.transform = 'scale(1)'; // 恢复图片大小
+        }, 500); // 与CSS中的transition时间匹配
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+        showImage(currentIndex);
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+        showImage(currentIndex);
+    }
+
+    // 自动切换图片
+    setInterval(nextImage, 5000); // 每5秒换到下一张图片
+    </script>
+
+    <style>
+    .carousel-button {
+        background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景 */
+        border: none;
+        border-radius: 50%;
+        width: 60px; /* 增大按钮尺寸 */
+        height: 60px; /* 增大按钮尺寸 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .carousel-button:hover {
+        background-color: rgba(255, 255, 255, 0.8); /* 鼠标悬停时背景变得更不透明 */
+    }
+
+    .triangle-left, .triangle-right {
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
+
+    .triangle-left {
+        border-width: 15px 20px 15px 0; /* 调整三角形尺寸 */
+        border-color: transparent white transparent transparent;
+    }
+
+    .triangle-right {
+        border-width: 15px 0 15px 20px; /* 调整三角形尺寸 */
+        border-color: transparent transparent transparent white;
+    }
+
+    .case-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding: 0;
+    }
+
+    .case-card {
+        background: #f8f8f8;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    </style>
+</body>
+</html>

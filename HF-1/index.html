@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixels - Digital Excellence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    .aigc-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin: 20px; /* 添加上下左右间隔 */
+        padding: 20px; /* 添加上下左右的间隔 */
+        border-radius: 15px; /* 添加圆角 */
+    }
+    .aigc-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .carousel-button {
+        background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景 */
+        border: none;
+        border-radius: 50%;
+        width: 60px; /* 增大按钮尺寸 */
+        height: 60px; /* 增大按钮尺寸 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .carousel-button:hover {
+        background-color: rgba(255, 255, 255, 0.8); /* 鼠标悬停时背景变得更不透明 */
+    }
+
+    .carousel-button:active {
+        transform: scale(0.95);
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .triangle-left, .triangle-right {
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
+
+    .triangle-left {
+        border-width: 15px 20px 15px 0; /* 调整三角形尺寸 */
+        border-color: transparent white transparent transparent;
+    }
+
+    .triangle-right {
+        border-width: 15px 0 15px 20px; /* 调整三角形尺寸 */
+        border-color: transparent transparent transparent white;
+    }
+
+    .case-container {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .case-card {
+        flex: 1;
+        text-align: center;
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .case-card a {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .case-card img {
+        width: 100%;
+        height: 300px; /* 固定高度 */
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .case-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .case-card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+    }
+
+    .case-slider {
+        position: relative;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .case-slider-wrapper {
+        display: flex;
+        width: 100%;
+        transition: transform 0.5s ease;
+    }
+
+    .case-slide {
+        min-width: 100%;
+        height: 100%;
+    }
+
+    .case-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .case-slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.8);
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    .case-slider-btn:hover {
+        background: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .case-slider-btn.prev-btn {
+        left: 10px;
+    }
+
+    .case-slider-btn.next-btn {
+        right: 10px;
+    }
+
+    .icon-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background-color: #f0f0f0; /* 背景颜色 */
+        border-radius: 10px;
+    }
+
+    .icon-container img {
+        width: 40px; /* 设置统一的图标宽度 */
+        height: 40px; /* 设置统一的图标高度 */
+        transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .icon-container img:hover {
+        transform: scale(1.1); /* 放大效果 */
+        opacity: 0.8; /* 改变透明度 */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+    }
+
+    .icon-container img:active {
+        transform: scale(0.95); /* 按下时缩小效果 */
+    }
+
+    .background-image {
+        width: 600px; /* 设置底图宽度为600像素 */
+        height: auto; /* 高度自适应 */
+        display: block;
+        margin: 0 auto; /* 居中对齐 */
+    }
+    </style>
+</head>
+<body>
+    <div id="imageViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; cursor: pointer;" onclick="hideImageViewer()">
+        <img id="largeImage" style="max-width: 90%; max-height: 90%; object-fit: contain;">
+    </div>
+
+    <script>
+    function showLargeImage(src) {
+        const viewer = document.getElementById('imageViewer');
+        const image = document.getElementById('largeImage');
+        image.src = src;
+        viewer.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideImageViewer() {
+        const viewer = document.getElementById('imageViewer');
+        viewer.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideImageViewer();
+        }
+    });
+    </script>
+
+    <nav class="navigation">
+        <div class="nav-container" style="
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;">
+            <div class="nav-left">
+                <a href="#" class="nav-logo">作品集</a>
+                <div class="nav-links">
+                    <a href="#" class="nav-item">主页</a>
+                    <a href="experience.html" class="nav-item">作品集展示</a>
+                    <a href="#" class="nav-item" onclick="showResumeModal(); return false;">简历</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="#" class="contact-btn">联系我 <i class="fas fa-arrow-right"></i></a>
+                <button class="menu-btn"><i class="fas fa-bars"></i></button>
+                <a href="#" onclick="showResumeModal(); return false;" style="
+                    text-decoration: none;
+                    color: #333;
+                    padding: 8px 15px;
+                    border-radius: 4px;
+                    transition: background-color 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                ">
+                    <i class="fas fa-user"></i>
+                    简历
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="
+        margin: 20px auto 0;
+        max-width: 1200px;
+        padding: 100px 20px 0;
+        width: 100%;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;">
+        <div class="hero-content" style="
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 2;">
+            <h1 class="hero-title">关于我的作品集</h1>
+            <p class="hero-subtitle" style="margin-top: 20px;">欢迎来到我的设计作品集，<br>这里展现了我对设计的热情与追求。</p>
+            <div class="hero-actions">
+                <a href="#" class="primary-btn">开始合作 <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="image-section" style="margin: 40px 0; text-align: center; position: relative;">
+                <img id="carousel-image" src="./images/IMGP1428.JPG" alt="插入图片" style="max-width: 100%; border-radius: 20px; transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;">
+                <div style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);">
+                    <button class="carousel-button" onclick="prevImage()" style="background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; padding: 10px;">
+                        <img src="./icon/left.png" alt="Previous" style="width: 30px; height: 30px;">
+                    </button>
+                </div>
+                <div style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);">
+                    <button class="carousel-button" onclick="nextImage()" style="background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; padding: 10px;">
+                        <img src="./icon/right.png" alt="Next" style="width: 30px; height: 30px;">
+                    </button>
+                </div>
+            </div>
+            <script>
+            // 通用轮播图函数
+            function createCarousel(elementId, images, interval = 4000) {
+                let currentIndex = 0;
+
+                function showSlide(index) {
+                    const element = document.getElementById(elementId);
+                    element.style.opacity = 0.2;
+                    element.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        element.src = images[index];
+                        element.style.opacity = 1;
+                        element.style.transform = 'scale(1)';
+                    }, 500);
+                }
+
+                function next() {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    showSlide(currentIndex);
+                }
+
+                function prev() {
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    showSlide(currentIndex);
+                }
+
+                // 自动轮播
+                setInterval(next, interval);
+
+                return { next, prev };
+            }
+
+            // 初始化场景建模轮播
+            const sceneImages = [
+                './images/landscenes/1-3.png',
+                './images/landscenes/2-1.png',
+                './images/landscenes/3-7.png',
+                './images/landscenes/3-9.png',
+                './images/landscenes/1-6.png',
+                './images/landscenes/1-7.png',
+                './images/landscenes/2-3.png',
+                './images/landscenes/2-5.png',
+                './images/landscenes/3-1.png',
+                './images/landscenes/3-4.png',
+                './images/landscenes/3-5.png',
+                './images/landscenes/4-0.png'
+            ];
+            const sceneCarousel = createCarousel('scene-image', sceneImages);
+            window.nextScene = sceneCarousel.next;
+            window.prevScene = sceneCarousel.prev;
+
+            // 初始化顶部轮播
+            const headerImages = [
+                './images/IMGP1428.JPG',
+                './images/IMGP1458.JPG',
+                './images/IMGP1511.JPG'
+            ];
+            const headerCarousel = createCarousel('carousel-image', headerImages);
+            window.nextImage = headerCarousel.next;
+            window.prevImage = headerCarousel.prev;
+            </script>
+            <div class="what-i-do">
+                <h2 style="
+                    font-size: 2.5em; 
+                    margin-bottom: 40px; 
+                    text-align: center; 
+                    font-weight: bold; 
+                    font-family: '黑体', sans-serif;">
+                    我可以做的事情
+                </h2>
+                
+                <!-- 软件技能展示区域 -->
+                <div style="text-align: center;">
+                    <div style="
+                        display: inline-flex;
+                        background-color: #f8f8f8;
+                        border-radius: 15px;
+                        padding: 15px;
+                        gap: 15px;
+                        margin: 15px 0 20px;
+                        align-items: center;
+                        justify-content: center;
+                        flex-wrap: wrap;">
+                        <img src="./downicon/figma.png" alt="Figma" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-ai.png" alt="Adobe Illustrator" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-ae.png" alt="Adobe After Effects" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/adobe-pr.png" alt="Adobe Premiere" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/chatgpt.png" alt="ChatGPT" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/html5.png" alt="HTML5" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/github.png" alt="GitHub" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/ue.png" alt="UE" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="./downicon/maya.png" alt="maya" style="height: 35px; width: auto; transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    
+                </div>
+
+                <!-- 添加标题和更多案例按钮的容器 -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="text-align: left; font-size: 2.5em; margin: 0; margin-bottom: 0; font-weight: bold; font-family: '黑体', sans-serif; flex-grow: 1;">AIGC</h2>  <!-- AIGC 标题，左对齐 -->
+                    <div style="display: flex; justify-content: flex-end;">
+                        <a href="stable-diffusion-portfolio.html" style="
+                            background-color: #444;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 50px;
+                            text-decoration: none;
+                            font-size: 16px;">更多案例</a>  <!-- 更多案例按钮 -->
+                    </div>
+                </div>
+
+                <!-- 添加作品展示 -->
+                <div id="services" class="aigc-showcase" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; background-color: #ffffff;">
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2;">
+                        <img src="./images/花-风铃.png" alt="花-风铃" style="width: 100%; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-风铃</h3>
+                    </div>
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2;">
+                        <img src="./images/花-牡丹.png" alt="花-牡丹" style="width: 100%; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-牡丹</h3>
+                    </div>
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2;">
+                        <img src="./images/花-鸢尾.png" alt="花-鸢尾" style="width: 100%; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-鸢尾</h3>
+                    </div>
+                </div>
+
+                <!-- 平面设计板块 -->
+                <div class="section">
+                    <!-- 平面设计内容 -->
+                    <div class="services-section" style="margin-top: 40px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <h2 style="font-size: 2em;">平面设计</h2>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end;">
+                                <a href="experience.html" style="background-color: #444; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none;">更多案例</a>
+                            </div>
+                        </div>
+                        
+                        <div class="services-container">
+                            <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                <a href="i-ren-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                    <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                        <img src="images\I人盒子\I人盒子-1.jpg" alt="网页设计" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h3>为年轻人打造的社交软件VI手册</h3>
+                                    <p>为您的品牌打造视觉震撼、用户友好的公司品牌形象。</p>
+                                </a>
+                            </div>
+                            <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                <a href="ko-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                    <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                        <img src="images/KO/KO-1.jpg" alt="数字营销" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h3>KO游戏策划VI手册</h3>
+                                    <p>制定全面的策略，以有效的方式吸引您的目标受众。</p>
+                                </a>
+                            </div>
+                            <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                <a href="qiangsheng-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                    <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                        <img src="images/强盛/强盛-0.jpg" alt="SEO" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h3>房地产LOGO设计</h3>
+                                    <p>是一个专业的房地产LOGO设计师，提供专业的房地产LOGO设计服务。</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                </div>
+
+                <!-- 场景建模板块 -->
+                <div class="section" id="scene-modeling">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="font-size: 2em;">场景建模</h2>
+                        </div>
+                        <a href="3d-modeling-cases.html" style="background-color: #444; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none;">更多案例</a>
+                    </div>
+                    <!-- 场景建模内容 -->
+
+                    <!-- 新的图片板块 -->
+                    <div class="scene-modeling-section" style="margin: 40px 0; text-align: center; position: relative;">
+                        <div style="position: relative; display: inline-block;">
+                            <img id="scene-image" src="./images/landscenes/1-3.png" alt="场景建模" style="max-width: 100%; border-radius: 20px; transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;">
+                            <!-- 文字描述遮罩层 -->
+                            <div class="image-description" style="
+                                position: absolute;
+                                bottom: 20px;
+                                left: 0;
+                                right: 0;
+                                margin: 0 20px;
+                                background: rgba(240, 240, 240, 0.9);
+                                color: #333;
+                                padding: 20px;
+                                transform: translateY(20px);
+                                opacity: 0;
+                                transition: all 0.3s ease;
+                                border-radius: 10px;
+                                text-align: left;
+                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                                backdrop-filter: blur(5px);
+                            ">
+                                <h3 style="margin-bottom: 10px; font-size: 1.2em; color: #222;">场景说明</h3>
+                                <p style="font-size: 0.9em; line-height: 1.5; color: #444;">这是一个使用Maya和UE制作的场景。通过精心的布局和光影效果，展现出独特的空间氛围。</p>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);">
+                            <button class="carousel-button" onclick="prevScene()" style="background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; padding: 10px;">
+                                <img src="./icon/left.png" alt="Previous" style="width: 30px; height: 30px;">
+                            </button>
+                        </div>
+                        <div style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);">
+                            <button class="carousel-button" onclick="nextScene()" style="background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; padding: 10px;">
+                                <img src="./icon/right.png" alt="Next" style="width: 30px; height: 30px;">
+                            </button>
+                        </div>
+                    </div>
+
+                    <style>
+                    .scene-modeling-section > div:first-child:hover .image-description {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                    </style>
+                </div>
+            </div>
+        </header>
+
+        <main class="portfolio-grid">
+            <div class="content-container" style="
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                width: 100%;">
+            </div>
+        </main>
+
+        <footer style="text-align: center; padding: 20px; background-color: #ffffff; color: #444;">
+            <div>
+                <a href="#" style="margin: 0 10px; display: inline-block; transition: transform 0.3s;"><img src="./icon/QQ.png" alt="QQ" style="width: 30px; height: 30px;"></a>
+                <a href="#" style="margin: 0 10px; display: inline-block; transition: transform 0.3s;"><img src="./icon/Weechat.png" alt="WeChat" style="width: 30px; height: 30px;"></a>
+            </div>
+            <div style="margin-top: 10px;">
+                <p> 2024 作品集展示. 保留所有权利</p>
+            </div>
+        </footer>
+        <style>
+        footer a:hover {
+            transform: scale(1.1);
+        }
+        </style>
+
+        <div class="back-to-top">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+
+        <script>
+        // 返回顶部按钮的显示控制
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        </script>
+
+        <style>
+        .carousel-button:active {
+            transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        </style>
+
+        <!-- 在 body 标签结束前添加模态框 -->
+        <div id="resumeModal" style="
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            cursor: pointer;
+        ">
+            <img id="resumeModalImage" src="" alt="简历大图" style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 95%;
+                max-height: 95vh;
+                object-fit: contain;
+            ">
+        </div>
+
+        <!-- 添加 JavaScript 代码 -->
+        <script>
+        const resumeModal = document.getElementById('resumeModal');
+        const resumeModalImage = document.getElementById('resumeModalImage');
+
+        function showResumeModal() {
+            resumeModal.style.display = 'block';
+            resumeModalImage.src = './images/phf.jpg';
+        }
+
+        // 点击模态框任意位置关闭
+        resumeModal.addEventListener('click', () => {
+            resumeModal.style.display = 'none';
+        });
+
+        // ESC 键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && resumeModal.style.display === 'block') {
+                resumeModal.style.display = 'none';
+            }
+        });
+        </script>
+
+        <!-- 添加导航栏按钮悬停效果 -->
+        <style>
+        .nav-right a:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        </style>
+    </body>
+</html>

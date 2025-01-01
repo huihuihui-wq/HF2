@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midjourney作品集</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="aigc-portfolio.html" class="nav-logo">
+                    <i class="fas fa-arrow-left"></i> 返回AIGC作品集
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="portfolio-detail-page">
+        <div class="content-container">
+            <header class="portfolio-header">
+                <h1 class="page-title">Midjourney作品集</h1>
+                <p class="portfolio-description">使用Midjourney创作的AI艺术作品展示</p>
+            </header>
+
+            <div class="portfolio-categories">
+                <button class="category-btn active" data-category="all">全部</button>
+                <button class="category-btn" data-category="character">人物角色</button>
+                <button class="category-btn" data-category="scene">场景概念</button>
+                <button class="category-btn" data-category="style">风格探索</button>
+            </div>
+
+            <div class="portfolio-grid">
+                <!-- 作品项目示例 -->
+                <div class="portfolio-item" data-category="character">
+                    <div class="portfolio-item-inner">
+                        <img src="./images/midjourney/work1.jpg" alt="作品1">
+                        <div class="portfolio-overlay">
+                            <h3>作品标题</h3>
+                            <p>作品描述和创作理念</p>
+                            <div class="portfolio-tags">
+                                <span class="tag">人物角色</span>
+                                <span class="tag">写实风格</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 更多作品项目 -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="copyright">© 2024 AIGC作品集. 保留所有权利</div>
+    </footer>
+
+    <script>
+        // 分类筛选功能
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                // 添加当前按钮的active类
+                btn.classList.add('active');
+
+                const category = btn.dataset.category;
+                
+                portfolioItems.forEach(item => {
+                    if (category === 'all' || item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

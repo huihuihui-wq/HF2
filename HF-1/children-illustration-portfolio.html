@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童插画系列</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pdf-viewer {
+            display: flex;
+            height: calc(100vh - 60px);
+            margin: 10px;
+            gap: 15px;
+        }
+
+        .thumbnail-sidebar {
+            width: 180px;
+            overflow-y: auto;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .thumbnail {
+            width: 100%;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 4px;
+        }
+
+        .thumbnail.active {
+            border-color: #444;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .main-image-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: transparent;
+            padding: 30px 20px;
+            gap: 15px;
+        }
+
+        .main-image {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .main-image.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .main-image.fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .main-image-container::-webkit-scrollbar {
+            width: 8px;
+            background: transparent;
+        }
+
+        .main-image-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .main-image-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            z-index: 10000;
+        }
+
+        .toolbar button {
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-input {
+            width: 50px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .toolbar .play-btn {
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: auto;
+        }
+
+        .nav-container {
+            padding: 10px 20px;
+        }
+
+        .image-wrapper {
+            margin: 15px 0;
+            background: rgba(245, 245, 245, 0.1);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        @media (max-width: 768px) {
+            .pdf-viewer {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .thumbnail-sidebar {
+                width: 100%;
+                height: 120px;
+                display: flex;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 10px;
+            }
+
+            .thumbnail {
+                width: auto;
+                height: 100px;
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+
+            .main-image-container {
+                height: calc(100vh - 300px);
+            }
+        }
+
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .navigation.show {
+            transform: translateY(0);
+        }
+
+        .portfolio-detail-page {
+            padding-top: 20px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="javascript:history.back()" class="nav-logo">
+                    <i class="fas fa-arrow-left"></i> 返回上一页
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="portfolio-detail-page">
+        <div class="content-container">
+            <div class="pdf-viewer">
+                <div class="thumbnail-sidebar" id="thumbnails">
+                    <!-- 缩略图将由JavaScript动态生成 -->
+                </div>
+                <div class="main-content">
+                    <div class="main-image-container" id="mainImageContainer">
+                        <!-- 图片将由 JavaScript 动态添加 -->
+                    </div>
+                    <div class="toolbar">
+                        <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                        <div class="page-display">
+                            <input type="text" class="page-input" id="currentPage" value="1">
+                            <span>/</span>
+                            <span id="totalPages">13</span>
+                        </div>
+                        <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                        <button id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+                        <button id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
+                        <button id="presentationBtn"><i class="fas fa-play"></i> 演示</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 13;
+        let zoomLevel = 1;
+        let isPresenting = false;
+        let presentationInterval;
+
+        // 图片文件名数组
+        const imageFiles = [
+            'ComfyUI_temp_zjzku_00001_',
+            'ComfyUI_temp_zjzku_00003_',
+            'ComfyUI_temp_zjzku_00010_',
+            'ComfyUI_temp_zjzku_00019_',
+            'ComfyUI_temp_zjzku_00022_',
+            'ComfyUI_temp_zjzku_00023_',
+            'ComfyUI_temp_zjzku_00024_',
+            'ComfyUI_temp_zjzku_00029_',
+            'ComfyUI_temp_zjzku_00031_',
+            'ComfyUI_temp_zjzku_00032_',
+            'ComfyUI_temp_zjzku_00033_',
+            'ComfyUI_temp_zjzku_00037_',
+            'ComfyUI_temp_zjzku_00038_'
+        ];
+
+        // 生成缩略图
+        const thumbnailsContainer = document.getElementById('thumbnails');
+        imageFiles.forEach((file, i) => {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = `./images/公众号/儿童插画/${file}.png`;
+            thumbnail.alt = `缩略图 ${i + 1}`;
+            thumbnail.className = 'thumbnail';
+            thumbnail.dataset.page = i + 1;
+            thumbnail.onclick = () => scrollToImage(i + 1);
+            thumbnailsContainer.appendChild(thumbnail);
+        });
+
+        // 初始化加载所有图片
+        function loadAllImages() {
+            const container = document.getElementById('mainImageContainer');
+            container.innerHTML = ''; // 清空容器
+            
+            imageFiles.forEach((file, i) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.id = `page-${i + 1}`;
+                imgContainer.className = 'image-wrapper';
+                
+                const img = document.createElement('img');
+                img.src = `./images/公众号/儿童插画/${file}.png`;
+                img.alt = `儿童插画 ${i + 1}`;
+                img.className = 'main-image';
+                
+                imgContainer.appendChild(img);
+                container.appendChild(imgContainer);
+            });
+        }
+
+        // 滚动到指定图片
+        function scrollToImage(pageNum) {
+            currentPage = pageNum;
+            document.getElementById('currentPage').value = pageNum;
+            
+            const targetImage = document.getElementById(`page-${pageNum}`);
+            targetImage.scrollIntoView({ behavior: 'smooth' });
+            
+            // 更新缩略图选中状态
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.toggle('active', thumb.dataset.page == pageNum);
+            });
+        }
+
+        // 监听滚动事件来更新页码
+        document.getElementById('mainImageContainer').addEventListener('scroll', function() {
+            const images = document.querySelectorAll('.image-wrapper');
+            const containerTop = this.scrollTop;
+            const containerHeight = this.clientHeight;
+            
+            images.forEach((img, index) => {
+                const rect = img.getBoundingClientRect();
+                if (rect.top <= containerHeight/2 && rect.bottom >= containerHeight/2) {
+                    currentPage = index + 1;
+                    document.getElementById('currentPage').value = currentPage;
+                    
+                    // 更新缩略图选中状态
+                    document.querySelectorAll('.thumbnail').forEach(thumb => {
+                        thumb.classList.toggle('active', thumb.dataset.page == currentPage);
+                    });
+                }
+            });
+        });
+
+        // 初始化
+        loadAllImages();
+        scrollToImage(1);
+
+        // 按钮事件处理
+        document.getElementById('prevBtn').onclick = () => {
+            if (currentPage > 1) scrollToImage(currentPage - 1);
+        };
+
+        document.getElementById('nextBtn').onclick = () => {
+            if (currentPage < totalPages) scrollToImage(currentPage + 1);
+        };
+
+        document.getElementById('zoomInBtn').onclick = () => {
+            if (zoomLevel < 2) {
+                zoomLevel += 0.1;
+                document.querySelectorAll('.main-image').forEach(img => {
+                    img.style.transform = `scale(${zoomLevel})`;
+                });
+            }
+        };
+
+        document.getElementById('zoomOutBtn').onclick = () => {
+            if (zoomLevel > 0.5) {
+                zoomLevel -= 0.1;
+                document.querySelectorAll('.main-image').forEach(img => {
+                    img.style.transform = `scale(${zoomLevel})`;
+                });
+            }
+        };
+
+        // 页码输入处理
+        document.getElementById('currentPage').onchange = (e) => {
+            const pageNum = parseInt(e.target.value);
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                scrollToImage(pageNum);
+            } else {
+                e.target.value = currentPage;
+            }
+        };
+
+        // 演示模式
+        document.getElementById('presentationBtn').onclick = () => {
+            if (isPresenting) {
+                clearInterval(presentationInterval);
+                document.getElementById('presentationBtn').innerHTML = '<i class="fas fa-play"></i> 演示';
+            } else {
+                presentationInterval = setInterval(() => {
+                    if (currentPage < totalPages) {
+                        scrollToImage(currentPage + 1);
+                    } else {
+                        scrollToImage(1);
+                    }
+                }, 3000);
+                document.getElementById('presentationBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+            }
+            isPresenting = !isPresenting;
+        };
+
+        // 添加导航栏显示/隐藏逻辑
+        const nav = document.querySelector('.navigation');
+        let lastScrollY = window.scrollY;
+        let isMouseNearTop = false;
+
+        // 监听鼠标移动
+        document.addEventListener('mousemove', (e) => {
+            isMouseNearTop = e.clientY <= 50;
+            updateNavVisibility();
+        });
+
+        // 监听滚动
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY < lastScrollY) {
+                nav.classList.add('show');
+            } else {
+                if (!isMouseNearTop) {
+                    nav.classList.remove('show');
+                }
+            }
+            lastScrollY = currentScrollY;
+        });
+
+        // 更新导航栏可见性
+        function updateNavVisibility() {
+            if (isMouseNearTop) {
+                nav.classList.add('show');
+            } else {
+                nav.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html> 

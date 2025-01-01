@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGC概念设计图作品集</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 更新容器样式，移除滚动条 */
+        .portfolio-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+            overflow: visible;
+            height: auto;
+        }
+
+        /* 移除之前的滚动条样式 */
+        .portfolio-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .portfolio-grid::-webkit-scrollbar-thumb {
+            display: none;
+        }
+
+        .portfolio-grid::-webkit-scrollbar-track {
+            display: none;
+        }
+
+        .content-container {
+            height: auto;
+            position: relative;
+        }
+
+        .portfolio-item {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .portfolio-item-wide {
+            width: 100%;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* 添加放映模式样式 */
+        .slideshow-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .slideshow-image {
+            max-width: 95%;
+            max-height: 95vh;
+            object-fit: contain;
+            transition: all 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .slideshow-image.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .slideshow-image.fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slideshow-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            z-index: 10000;
+        }
+
+        .slideshow-controls button {
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slideshow-counter {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .slideshow-controls .play-btn {
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: auto;
+        }
+
+        .nav-right {
+            margin-left: auto;
+        }
+
+        .presentationBtn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .presentationBtn:hover {
+            background: #666;
+        }
+
+        .vertical-gallery {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4列布局 */
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .vertical-gallery .portfolio-item {
+            width: 100%;
+        }
+
+        .vertical-gallery .portfolio-item-inner {
+            width: 64%; /* 宽度缩小到64% */
+            margin: 0 auto; /* 居中对齐 */
+            position: relative;
+            aspect-ratio: 9/16; /* 修改为9:16比例 */
+            overflow: hidden;
+        }
+
+        .vertical-gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 1200px) {
+            .vertical-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .vertical-gallery {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+
+        /* 修改导航栏样式 */
+        .navigation {
+            position: sticky; /* 使菜单栏在滚动到一定位置时变为固定 */
+            top: 0; /* 距离顶部 0 像素 */
+            background-color: #f8f8f8; /* 背景颜色 */
+            z-index: 1000; /* 确保在其他元素之上 */
+        }
+
+        /* 当鼠标靠近顶部时显示导航栏 */
+        .navigation.show {
+            transform: translateY(0);
+        }
+
+        /* 调整主内容区域的上边距 */
+        .portfolio-detail-page {
+            padding-top: 20px;
+        }
+
+        .portfolio-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            height: 100%;
+        }
+
+        .portfolio-link:hover {
+            cursor: pointer;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%; /* 宽度100% */
+            padding-top: 177.78%; /* 9:16比例 (16/9 = 1.7778) */
+            overflow: hidden;
+            border: 2px solid #ccc; /* 边框样式 */
+            border-radius: 15px; /* 添加圆角 */
+            margin-bottom: 20px; /* 每张图片底部间距 */
+        }
+
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 60%; /* 缩小图片比例 */
+            height: auto; /* 保持原始高度比例 */
+            border-radius: 15px; /* 保持圆角效果 */
+        }
+
+        /* 添加 Hover 效果 */
+        .image-container img.hover-effect {
+            transition: transform 0.3s ease; /* 添加过渡效果 */
+        }
+
+        .image-container img.hover-effect:hover {
+            transform: scale(1.05); /* Hover 时放大效果 */
+        }
+
+        .hover-effect {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-effect:hover {
+            transform: scale(1.1);
+        }
+
+        .aigc-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 20px; /* 外边距 */
+            padding: 20px; /* 内边距 */
+            border-radius: 15px; /* 圆角 */
+        }
+
+        .aigc-card:hover {
+            transform: scale(1.05); /* 放大效果 */
+            transition: transform 0.3s ease; /* 过渡效果 */
+        }
+
+        .portfolio-overlay {
+            display: none; /* 默认隐藏文字部分 */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); /* 渐变背景 */
+            color: white;
+            padding: 10px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease; /* 添加过渡效果 */
+            opacity: 0; /* 默认透明 */
+        }
+
+        .aigc-card:hover .portfolio-overlay {
+            display: block; /* Hover时显示文字部分 */
+            opacity: 1; /* Hover时变为不透明 */
+        }
+        
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container" style="max-width: 1200px; margin: 0 auto; padding: 0 0px; width: 100%;">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">
+                    <i class="fas fa-arrow-left"></i> 返回主页
+                </a>
+            </div>
+            <div class="nav-right">
+                
+            </div>
+        </div>
+    </nav>
+    <main class="portfolio-detail-page">
+        <div class="content-container">
+            <header class="portfolio-header">
+                <h1 class="page-title">AIGC游戏概念设计图</h1>
+                <p class="portfolio-description">使用ComfyUI FLUX进行的AI图像创作与处理展示</p>
+            </header>
+
+            <div class="portfolio-categories">
+                <button class="category-btn active" data-category="all">全部</button>
+                <button class="category-btn" data-category="illustration">插画创作</button>
+                <button class="category-btn" data-category="edit">角色设计</button>
+                <button class="category-btn" data-category="game">游戏设计</button>
+                <button class="category-btn" data-category="interior">装修设计</button>
+            </div>
+
+            <div class="portfolio-grid">
+                <div class="portfolio-item portfolio-item-wide" data-category="illustration">
+                    <div class="wide-slider">
+                        <div class="wide-slider-wrapper">
+                            <div class="wide-slide">
+                                <img src="./images/scenes/大场景1.png" alt="场景概念图1">
+                                <div class="portfolio-overlay">
+                                    <h3>逃离地球</h3>
+                                    <p>使用ComfyUI FLUX创作的大型场景概念图</p>
+                                    <div class="portfolio-tags">
+                                        <span class="tag">插画创作</span>
+                                        <span class="tag">场景系列</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wide-slide">
+                                <img src="./images/公众号/像素游戏/ComfyUI_temp_zvjsy_00009_.png" alt="像素游戏设计">
+                                <div class="portfolio-overlay">
+                                    <h3>像素游戏概念设计图</h3>
+                                    <p>使用ComfyUI FLUX创作的大型场景概念图</p>
+                                    <div class="portfolio-tags">
+                                        <span class="tag">插画创作</span>
+                                        <span class="tag">场景系列</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wide-slide">
+                                <img src="./images/vintage/复古1.jpg" alt="复古风格1">
+                                <div class="portfolio-overlay">
+                                    <h3>复古风格</h3>
+                                    <p>使用Stable Diffusion创作的复古风格插画</p>
+                                    <div class="portfolio-tags">
+                                        <span class="tag">插画创作</span>
+                                        <span class="tag">复古系列</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wide-slide">
+                                <img src="./images/公众号/游戏场景概念/ComfyUI_temp_tmfhp_00024_.png" alt="复古风格1">
+                                <div class="portfolio-overlay">
+                                    <h3>游戏场景概念图一</h3>
+                                    <p>使用ComfyUI FLUX创作的中世纪风格插画</p>
+                                    <div class="portfolio-tags">
+                                        <span class="tag">插画创作</span>
+                                        <span class="tag">复古系列</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="wide-slider-btn prev-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="wide-slider-btn next-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+
+                <div id="services" class="aigc-showcase" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; background-color: #ffffff;">
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2; width: 80%; height: auto;">
+                        <img src="./images/花-风铃.png" alt="花-风铃" style="width: 100%; height: auto; object-fit: cover; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-风铃</h3>
+                    </div>
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2; width: 80%; height: auto;">
+                        <img src="./HF2\images\花-牡丹.png" alt="花-牡丹" style="width: 100%; height: auto; object-fit: cover; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-牡丹</h3>
+                    </div>
+                    <div class="aigc-card" style="border-radius: 15px; overflow: hidden; background-color: #fbfbfb; border: 2px solid #f2f2f2; width: 80%; height: auto;">
+                        <img src="./HF2\images\花-鸢尾.png" alt="花-鸢尾" style="width: 100%; height: auto; object-fit: cover; border-radius: 15px; cursor: pointer;" onclick="showLargeImage(this.src)">
+                        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center;">花-鸢尾</h3>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-category="edit" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    <a href="waterpark-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="service-image" style="overflow: hidden; border-radius: 10px; width: 100%; position: relative; padding-bottom: 77.3%;">
+                            <img src="images\character\水上乐园-1.jpg" alt="水上乐园" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <h3 style="margin-top: 10px;">水上乐园</h3>
+                        <p style="margin-top: 5px;">创作夏日水上乐园主题的游戏角色和场景设计。</p>
+                    </a>
+                </div>
+                <div class="services-container">
+                    <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        <a href="children-illustration-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                            <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                <img src="images\公众号\儿童插画\ComfyUI_temp_zjzku_00001_.png" alt="儿童插画" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>儿童插画</h3>
+                            <p>为儿童读物和教育内容创作生动有趣的插画作品。</p>
+                        </a>
+                    </div>
+                    <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        <a href="couple-avatar-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                            <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                <img src="images\公众号\情侣头像\ComfyUI_temp_yexdc_00001_.png" alt="情侣头像" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>情侣头像</h3>
+                            <p>为情侣定制独特的头像插画作品。</p>
+                        </a>
+                    </div>
+                    <div class="service-card" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        <a href="character-illustration-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                            <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                <img src="images\公众号\人物插画\ComfyUI_temp_yexdc_00038_.png" alt="人物插画" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>人物插画</h3>
+                            <p>创作富有个性和表现力的人物插画作品。</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="services-section" style="margin-top: 40px;">
+                    <div class="services-container">
+                        <div class="service-card" data-category="game" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <a href="game-design-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                    <img src="images\公众号\像素游戏\ComfyUI_temp_zvjsy_00009_.png" alt="像素游戏" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h3>像素游戏</h3>
+                                <p>创作复古风格的像素游戏概念设计。</p>
+                            </a>
+                        </div>
+                        <div class="service-card" data-category="game" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <a href="game-scene-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                    <img src="images\公众号\游戏场景概念\ComfyUI_temp_tmfhp_00023_.png" alt="游戏场景概念" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h3>游戏场景概念</h3>
+                                <p>创作独特的游戏场景概念设计。</p>
+                            </a>
+                        </div>
+                        <div class="service-card" data-category="interior" style="background-color: rgb(236, 235, 235); padding: 10px 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <a href="interior-design-portfolio.html" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="service-image" style="aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px;">
+                                    <img src="images\公众号\装修设计\ComfyUI_temp_yexdc_00018_.png" alt="装修设计" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h3>装修设计</h3>
+                                <p>创作现代风格的室内装修设计概念。</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+    </main>
+
+    <footer class="footer">
+        <div class="copyright"> 2024 AIGC作品集. 保留所有权利</div>
+    </footer>
+
+    <div class="slideshow-mode" id="slideshowMode">
+        <img class="slideshow-image" id="slideshowImage" src="" alt="放映图片">
+        <div class="slideshow-controls">
+            <button id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+            <input type="text" class="slideshow-counter" id="slideCounter" value="1 / 70" readonly>
+            <button id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+            <button id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+            <button id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
+            <button id="presentationBtn" class="play-btn">
+                <i class="fas fa-play"></i> 演示
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const portfolioItems = document.querySelectorAll('.portfolio-item');
+            const serviceCards = document.querySelectorAll('.service-card');
+            const servicesSection = document.querySelector('.services-section');
+            const servicesContainer = document.querySelector('.services-container');
+            const aigcShowcase = document.querySelector('.aigc-showcase');
+            const wideSlider = document.querySelector('.portfolio-item-wide');
+
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const category = button.dataset.category;
+
+                    if (category === 'illustration') {
+                        // 插画创作：显示花卉卡片和插画相关服务卡片
+                        servicesSection.style.display = 'none';
+                        servicesContainer.style.display = 'grid';
+                        aigcShowcase.style.display = 'grid';
+                        wideSlider.style.display = 'none';
+                        portfolioItems.forEach(item => {
+                            item.style.display = 'none';
+                        });
+                    } else if (category === 'interior') {
+                        // 装修设计：只显示装修设计卡片
+                        servicesSection.style.display = 'block';
+                        serviceCards.forEach(card => {
+                            if (card.dataset.category === 'interior') {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                        servicesContainer.style.display = 'none';
+                        aigcShowcase.style.display = 'none';
+                        wideSlider.style.display = 'none';
+                        portfolioItems.forEach(item => {
+                            item.style.display = 'none';
+                        });
+                    } else if (category === 'game') {
+                        // 游戏设计：只显示游戏设计卡片
+                        servicesSection.style.display = 'block';
+                        serviceCards.forEach(card => {
+                            if (card.dataset.category === 'game') {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                        servicesContainer.style.display = 'none';
+                        aigcShowcase.style.display = 'none';
+                        wideSlider.style.display = 'none';
+                        portfolioItems.forEach(item => {
+                            item.style.display = 'none';
+                        });
+                    } else if (category === 'all') {
+                        // 全部：显示所有内容
+                        servicesSection.style.display = 'block';
+                        serviceCards.forEach(card => {
+                            card.style.display = 'block';
+                        });
+                        servicesContainer.style.display = 'grid';
+                        aigcShowcase.style.display = 'grid';
+                        wideSlider.style.display = 'block';
+                        portfolioItems.forEach(item => {
+                            item.style.display = 'block';
+                        });
+                    } else {
+                        // 其他类别
+                        servicesSection.style.display = 'none';
+                        servicesContainer.style.display = 'none';
+                        aigcShowcase.style.display = 'none';
+                        wideSlider.style.display = 'none';
+                        portfolioItems.forEach(item => {
+                            if (item.dataset.category === category) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        // 添加轮播功能
+        const wideSliders = document.querySelectorAll('.wide-slider');
+        
+        wideSliders.forEach(slider => {
+            const wideSliderWrapper = slider.querySelector('.wide-slider-wrapper');
+            const wideSlides = slider.querySelectorAll('.wide-slide');
+            const widePrevBtn = slider.querySelector('.prev-btn');
+            const wideNextBtn = slider.querySelector('.next-btn');
+            let wideCurrentIndex = 0;
+            let wideSliderInterval;
+
+            function updateWideSlider() {
+                wideSliderWrapper.style.transform = `translateX(-${wideCurrentIndex * 100}%)`;
+            }
+
+            function nextSlide() {
+                wideCurrentIndex = (wideCurrentIndex < wideSlides.length - 1) ? wideCurrentIndex + 1 : 0;
+                updateWideSlider();
+            }
+
+            function prevSlide() {
+                wideCurrentIndex = (wideCurrentIndex > 0) ? wideCurrentIndex - 1 : wideSlides.length - 1;
+                updateWideSlider();
+            }
+
+            // 自动轮播
+            function startAutoSlide() {
+                wideSliderInterval = setInterval(nextSlide, 4000); // 每4秒切换一次
+            }
+
+            function stopAutoSlide() {
+                clearInterval(wideSliderInterval);
+            }
+
+            // 点击按钮切换
+            widePrevBtn.addEventListener('click', () => {
+                prevSlide();
+                stopAutoSlide(); // 点击后暂停自动轮播
+                startAutoSlide(); // 重新开始自动轮播
+            });
+
+            wideNextBtn.addEventListener('click', () => {
+                nextSlide();
+                stopAutoSlide(); // 点击后暂停自动轮播
+                startAutoSlide(); // 重新开始自动轮播
+            });
+
+            // 触摸滑动支持
+            let wideTouchStartX = 0;
+            let wideTouchEndX = 0;
+
+            wideSliderWrapper.addEventListener('touchstart', (e) => {
+                wideTouchStartX = e.touches[0].clientX;
+                stopAutoSlide(); // 触摸时暂停自动轮播
+            });
+
+            wideSliderWrapper.addEventListener('touchend', (e) => {
+                wideTouchEndX = e.changedTouches[0].clientX;
+                const diff = wideTouchStartX - wideTouchEndX;
+
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+                startAutoSlide(); // 触摸结束后重新开始自动轮播
+            });
+
+            // 鼠标悬停时暂停轮播
+            slider.addEventListener('mouseenter', stopAutoSlide);
+            slider.addEventListener('mouseleave', startAutoSlide);
+
+            // 开始自动轮播
+            startAutoSlide();
+        });
+
+        // 放映模式变量
+        let currentSlideIndex = 0;
+        let allImages = [];
+        const slideshowMode = document.getElementById('slideshowMode');
+        const slideshowImage = document.getElementById('slideshowImage');
+        const slideCounter = document.getElementById('slideCounter');
+        let slideshowInterval;
+
+        // 收集所有图片
+        function collectImages() {
+            allImages = Array.from(document.querySelectorAll('.portfolio-item img')).map(img => ({
+                src: img.src,
+                alt: img.alt
+            }));
+        }
+
+        // 自动播放功能
+        function startSlideshow() {
+            stopSlideshow(); // 先停止可能存在的播放
+            isPlaying = true;
+            document.getElementById('presentationBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+            
+            slideshowInterval = setInterval(() => {
+                let nextIndex = (currentSlideIndex + 1) % allImages.length;
+                showSlide(nextIndex);
+            }, 3500); // 设置为3.5秒，给过渡效果留出时间
+        }
+
+        function stopSlideshow() {
+            if (slideshowInterval) {
+                clearInterval(slideshowInterval);
+                isPlaying = false;
+                document.getElementById('presentationBtn').innerHTML = '<i class="fas fa-play"></i> 演示';
+            }
+        }
+
+        // 显示指定索引的图片
+        function showSlide(index) {
+            // 添加淡出效果
+            slideshowImage.classList.add('fade-out');
+            
+            setTimeout(() => {
+                currentSlideIndex = index;
+                slideshowImage.src = allImages[index].src;
+                slideshowImage.alt = allImages[index].alt;
+                slideCounter.value = `${index + 1} / ${allImages.length}`;
+                
+                // 添加淡入效果
+                slideshowImage.classList.remove('fade-out');
+                slideshowImage.classList.add('fade-in');
+                
+                // 清除淡入效果
+                setTimeout(() => {
+                    slideshowImage.classList.remove('fade-in');
+                }, 500);
+            }, 500);
+        }
+
+        // 为演示按钮添加点击事件
+        document.querySelectorAll('.presentationBtn, button[data-action="presentation"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 进入放映模式
+                slideshowMode.style.display = 'flex';
+                
+                // 找到当前分类下的所有图片
+                const currentCategory = document.querySelector('.category-btn.active')?.dataset.category || 'all';
+                if (currentCategory === 'all') {
+                    collectImages();
+                } else {
+                    allImages = Array.from(document.querySelectorAll(`.portfolio-item[data-category="${currentCategory}"] img`))
+                        .map(img => ({
+                            src: img.src,
+                            alt: img.alt
+                        }));
+                }
+                
+                // 从第一张图片开始放映
+                showSlide(0);
+                startSlideshow();
+            });
+        });
+
+        // 控制按钮事件
+        document.getElementById('nextSlide').addEventListener('click', (e) => {
+            e.stopPropagation();
+            let nextIndex = (currentSlideIndex + 1) % allImages.length;
+            showSlide(nextIndex);
+        });
+
+        document.getElementById('prevSlide').addEventListener('click', (e) => {
+            e.stopPropagation();
+            let prevIndex = currentSlideIndex - 1;
+            if (prevIndex < 0) prevIndex = allImages.length - 1;
+            showSlide(prevIndex);
+        });
+
+        // 退出放映模式
+        document.getElementById('exitSlideshow').addEventListener('click', () => {
+            stopSlideshow();
+            slideshowMode.style.display = 'none';
+        });
+
+        // 点击图片外区域退出
+        slideshowMode.addEventListener('click', (e) => {
+            if (e.target === slideshowMode) {
+                stopSlideshow();
+                slideshowMode.style.display = 'none';
+            }
+        });
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (slideshowMode.style.display === 'flex') {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    document.getElementById('nextSlide').click();
+                } else if (e.key === 'ArrowLeft') {
+                    document.getElementById('prevSlide').click();
+                } else if (e.key === 'Escape') {
+                    stopSlideshow();
+                    document.getElementById('exitSlideshow').click();
+                }
+            }
+        });
+
+        // 初始化
+        collectImages();
+
+        // 找到演示按钮并添加点击事件
+        document.getElementById('startPresentation').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // 进入放映模式
+            slideshowMode.style.display = 'flex';
+            
+            // 收集所有图片
+            collectImages();
+            
+            // 从第一张图片开始放映
+            showSlide(0);
+            
+            // 开始自动播放
+            startSlideshow();
+        });
+
+        // 添加缩放功能
+        let zoomLevel = 1;
+        
+        document.getElementById('zoomInBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (zoomLevel < 2) {
+                zoomLevel += 0.1;
+                slideshowImage.style.transform = `scale(${zoomLevel})`;
+            }
+        });
+
+        document.getElementById('zoomOutBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (zoomLevel > 0.5) {
+                zoomLevel -= 0.1;
+                slideshowImage.style.transform = `scale(${zoomLevel})`;
+            }
+        });
+
+        // 更新演示按钮功能
+        let isPlaying = false;
+        document.getElementById('presentationBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                stopSlideshow();
+                e.target.innerHTML = '<i class="fas fa-play"></i> 演示';
+            } else {
+                startSlideshow();
+                e.target.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // 添加导航栏显示/隐藏逻辑
+        const nav = document.querySelector('.navigation');
+        let lastScrollY = window.scrollY;
+        let isMouseNearTop = false;
+
+        // 监听鼠标移动
+        document.addEventListener('mousemove', (e) => {
+            // 当鼠标在距离顶部 50px 范围内时显示导航栏
+            isMouseNearTop = e.clientY <= 50;
+            updateNavVisibility();
+        });
+
+        // 监听滚动
+        window.addEventListener('scroll', () => {
+            // 向上滚动时显示导航栏
+            const currentScrollY = window.scrollY;
+            if (currentScrollY < lastScrollY) {
+                nav.classList.add('show');
+            } else {
+                if (!isMouseNearTop) {
+                    nav.classList.remove('show');
+                }
+            }
+            lastScrollY = currentScrollY;
+        });
+
+        // 更新导航栏可见性
+        function updateNavVisibility() {
+            if (isMouseNearTop) {
+                nav.classList.add('show');
+            } else {
+                nav.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

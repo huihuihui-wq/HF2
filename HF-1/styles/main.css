@@ -1,0 +1,371 @@
+.strong-series {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.strong-series-sidebar {
+  background: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.strong-series-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.strong-series-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.strong-series-item img {
+  width: 100%;
+  max-width: 400px;
+  height: 600px;
+  object-fit: cover;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+.strong-series-item img:hover {
+  transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+  .strong-series {
+    grid-template-columns: 1fr;
+  }
+  
+  .strong-series-sidebar {
+    margin-bottom: 1rem;
+  }
+  
+  .strong-series-item img {
+    height: 500px;
+  }
+  
+  .strong-series-content {
+    grid-template-columns: 1fr;
+  }
+} 
+
+/* 为 i 人系列封面图片添加特殊样式 */
+.case-card a img[src*="I人盒子"] {
+  height: auto; /* 移除固定高度 */
+  aspect-ratio: 4/3; /* 设置适合原图的宽高比 */
+  object-fit: contain; /* 确保图片完整显示，不裁剪 */
+  background-color: #f5f5f5; /* 添加背景色，防止图片周围空白区域显得突兀 */
+  padding: 10px; /* 添加内边距使图片与容器有一定间距 */
+}
+
+/* 调整卡片容器样式以适应不同比例的图片 */
+.case-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  box-shadow: none;
+}
+
+.case-card a {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保其他系列的图片保持原有样式 */
+.case-card a img:not([src*="I人盒子"]) {
+  height: 300px;
+  object-fit: cover;
+} 
+
+/* 案例研究区域样式 */
+.case-studies {
+  margin-top: 60px;
+}
+
+.case-studies h2 {
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.case-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.case-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  box-shadow: none;
+}
+
+.case-card:hover {
+  transform: none;
+}
+
+.case-studies .case-card {
+  box-shadow: none;
+}
+
+.case-studies .case-card a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-studies .case-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background-color: transparent;
+  padding: 0;
+}
+
+.case-card h3 {
+  padding: 20px;
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.case-card p {
+  padding: 0 20px 20px;
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .case-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .case-card img {
+    height: 180px;
+  }
+} 
+
+/* 修改案例研究区域的文字样式 */
+.case-studies .case-card h3 {
+  padding: 20px;
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  text-decoration: none;
+  text-shadow: none;
+  box-shadow: none;
+  border: none;
+  background: none;
+}
+
+.case-studies .case-card p {
+  padding: 0 20px 20px;
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 确保链接没有下划线效果 */
+.case-studies .case-card a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保悬停时也没有下划线 */
+.case-studies .case-card a:hover {
+  text-decoration: none;
+} 
+
+/* 移除其他可能的阴影效果 */
+.case-studies .case-card,
+.case-card a,
+.case-card-content,
+.case-card img {
+  box-shadow: none;
+}
+
+/* 移除悬停时的所有效果 */
+.case-card:hover,
+.case-card a:hover,
+.case-card-content:hover {
+  box-shadow: none;
+  transform: none;
+} 
+
+/* 确保描述文字及其容器没有任何阴影 */
+.case-studies .case-card p,
+.case-studies .case-card h3,
+.case-studies .case-card a,
+.case-studies .case-card {
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* 移除任何可能的过渡效果 */
+.case-studies .case-card p,
+.case-studies .case-card h3 {
+  transition: none;
+} 
+
+/* 确保标题容器也没有任何装饰效果 */
+.case-studies .case-card h3,
+.case-studies .case-card h3:hover {
+  text-decoration: none;
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+  transition: none;
+}
+
+/* 移除标题链接的所有装饰效果 */
+.case-studies .case-card a h3 {
+  text-decoration: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* 确保悬停时也没有任何效果 */
+.case-studies .case-card a:hover h3 {
+  text-decoration: none;
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+} 
+
+/* 平面设计展示区域样式 */
+.services-section {
+  margin-top: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+.services-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.service-card {
+  background-color: rgb(236, 235, 235);
+  padding: 10px;
+  border-radius: 15px;
+  transition: transform 0.3s ease;
+}
+
+.service-image {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-card h3 {
+  margin: 10px 0;
+  color: #333;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.service-card p {
+  color: #999;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.services-section h2 {
+  font-size: 2em;
+  margin-bottom: 0;
+}
+
+.more-cases-btn {
+  background-color: #444;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.more-cases-btn:hover {
+  background-color: #333;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .services-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-card {
+    margin-bottom: 20px;
+  }
+} 
+
+.what-i-do {
+    padding: 40px 0;
+}
+
+.software-icons img {
+    transition: transform 0.3s ease;
+}
+
+.software-icons img:hover {
+    transform: translateY(-5px);
+}
+
+.aigc-card {
+    transition: transform 0.3s ease;
+}
+
+.aigc-card:hover {
+    transform: translateY(-5px);
+}
+
+.aigc-card img {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.aigc-card h3 {
+    color: #333;
+    font-weight: normal;
+}
+
+@media (max-width: 768px) {
+    .software-icons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .aigc-showcase {
+        grid-template-columns: 1fr;
+    }
+} 
